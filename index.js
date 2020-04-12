@@ -17,8 +17,10 @@ http2
 function handleRequest(req, res) {
   fs.readFile(__dirname + req.url, function (err, data) {
     if (err) {
-      res.writeHead(404);
-      res.end(JSON.stringify(err));
+      fs.readFile(__dirname + "/index.html", (err, data) => {
+        res.writeHead(200);
+        res.end(data);
+      });
       return;
     }
     res.writeHead(200);
