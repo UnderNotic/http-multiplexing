@@ -1,4 +1,5 @@
 var fs = require("fs"),
+  url = require("url"),
   http1 = require("http"),
   http2 = require("http2");
 
@@ -14,8 +15,17 @@ http2
   )
   .listen(443);
 
-function handleRequest(req, res) {
-  fs.readFile(__dirname + req.url, function (err, data) {
+async function handleRequest(req, res) {
+  const parsedUrl = url.parse(req.url, true);
+  const queryObject = parsedUrl.query;
+  const pathname = parsedUrl.pathname;
+
+  if (Object.keys(queryObject || {}).includes("delay")) {
+    //delay 10 seconds
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+  }
+
+  fs.readFile(__dirname + pathname, function (err, data) {
     if (err) {
       fs.readFile(__dirname + "/index.html", (err, data) => {
         res.writeHead(200);
